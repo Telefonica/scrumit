@@ -1,4 +1,4 @@
 var exports = module.exports = {}
 
-exports.jiraUserName = 'TODO';
-exports.jiraPassword = 'TODO';
+exports.jiraUserName = process.env.JIRA_USER;
+exports.jiraPassword = process.env.JIRA_PASS;
