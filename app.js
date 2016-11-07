@@ -12,8 +12,10 @@ var app = express();
 
 var SlackBot = require('slackbots');
 
+var BOT_TOKEN = process.env.BOT_TOKEN;
+
 var bot = new SlackBot({
-    token: 'xoxb-101849598134-rdhSwg26GYDiREesL6VTyxar', // Add a bot https://my.slack.com/services/new/bot and put the token
+    token: BOT_TOKEN,
     name: 'Scrumit'
 });
 
