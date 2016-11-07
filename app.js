@@ -37,6 +37,7 @@ function startBreak () {
 let todo
 const configureTodo = function configureTodo () {
   if (process.env.MONGO_URI) {
+    const TodoList = require('./todo/')
     todo = new TodoList(bot)
   }
 }
