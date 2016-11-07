@@ -62,6 +62,18 @@ function postToEverybody(channel, message) {
   });
 }
 
+function askToEverybody(channel) {
+  getMembers(channel).then((usernames) => {
+    console.log(usernames)
+    usernames.forEach((username) => {
+      bigbrother.askTo(username).then(function (question) {
+        console.log('Sending', username, question)
+        bot.postMessageToUser(username, question);
+      });
+    });
+  });
+}
+
 function startBreak() {
   postToEverybody(CHANNEL, '[Break Starting] Juego, chiste, pregunta....');
   setTimeout(function() {
@@ -86,13 +98,11 @@ function getChannelInfo(channelId) {
 }
 
 function startWorking() {
-  bigbrother.askTo('jorgev', function (error, question) {
-    postToEverybody(CHANNEL, '[Mini-Sprint Starting] ' + question);
+    askToEverybody(CHANNEL);
     setTimeout(function() {
       postToEverybody(CHANNEL, '[Mini-Sprint Ended] How did it go? Did you finish those tasks?');
       startBreak();
     }, 2 * 60 * 1000);
-  });
 }
 
 startWorking();

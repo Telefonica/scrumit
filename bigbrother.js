@@ -4,41 +4,58 @@ var jiraconfig = require('./jiraconfig')
 
 var exports = module.exports = {};
 
-var JiraClient = require('jira-connector');
+if (jiraconfig.jiraUserName) {
 
-var jira = new JiraClient( {
-    host: 'jirapdi.tid.es',
-    basic_auth: {
-        username: jiraconfig.jiraUserName,
-        password: jiraconfig.jiraPassword
-    }
-});
+    var JiraClient = require('jira-connector');
 
-
-exports.askTo = function (user, callback) {
-
-    question = "Hi " + user + ", currently you are working on...\n";
-    opts = {jql:'assignee='+user+' and status = "In Progress"'};
-    console.log(opts.jql);
-    jira.search.search(opts, function(error, issues) {
-        if (error) {
-            callback(error, null);
-            return;
+    var jira = new JiraClient( {
+        host: 'jirapdi.tid.es',
+        basic_auth: {
+            username: jiraconfig.jiraUserName,
+            password: jiraconfig.jiraPassword
         }
-        console.log(issues);
-        var issuesList = issues.issues;
-        for (var index in issuesList) {
-            var issueQuestion = issuesList[index].key+" -> "+ issuesList[index].fields.summary;
-            console.log(issueQuestion);
-            question += "\n "+issueQuestion;
-        }
-        question += "\n Tell me on what you are really working... ^_"
-        callback(error, question);
     });
+
+    exports.askTo = function (user) {
+
+        return new Promise(function (fulfill, reject){
+        
+        var question = "Hi " + user + ", currently JIRA says you are working on these issues...\n";
+        opts = {jql:'assignee='+user+' and status = "In Progress"'};
+        console.log(opts.jql);
+        jira.search.search(opts, function(error, issues) {
+            if (error) {
+                fulfill("Hi " + user + ", tell me what you are currently working on...\n");
+                return;
+            }
+            console.log(issues);
+            var issuesList = issues.issues;
+            for (var index in issuesList) {
+                var issueQuestion = issuesList[index].key+" -> "+ issuesList[index].fields.summary;
+                console.log(issueQuestion);
+                question += "\n "+issueQuestion;
+            }
+            if (issuesList.length > 2) {
+                question += "\n More than 2 issues? please, don't make me cry...."
+            }
+
+            question += "\n Tell me what you are currently working on... ^_^ "
+            fulfill(question);
+        });
+      });
+    }
+
+} else {
+
+    exports.askTo = function (user) {
+
+        return new Promise(function (fulfill, reject){
+        
+            fulfill("Hi " + user + ", tell me what you are currently working on...\n");
+            return;
+        });
+    }
 }
-
-
-
 
 
 
