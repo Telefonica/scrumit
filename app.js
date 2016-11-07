@@ -17,6 +17,9 @@ const TodoList = require('./todo/')
 
 const app = express()
 
+var CHANNEL = 'general';
+var CHANNEL_ID = 'C2ZRNGN6T';
+
 bot.on('message', (data) => {
   // mapear messages a controllers
   if (data.type === 'message') {
@@ -31,25 +34,72 @@ function startBreak () {
   }, 1 * 60 * 1000)
 }
 
-function startWorking () {
-  bot.getChannel('general').then((data) => {
-    console.log(data)
-  })
-
-  bot.postMessageToUser('guillermo', 'Ola k ase?')
-  setTimeout(() => {
-    bot.postMessageToUser('guillermo', 'meow!')
-    startBreak()
-  }, 2 * 60 * 1000)
-}
-
-startWorking()
-
 let todo
 const configureTodo = function configureTodo () {
   todo = new TodoList(bot)
 }
 configureTodo()
+
+var members;
+
+function getMembers(channel) {
+  console.log('Retrieving channel members');
+  return bot.getChannel(channel).then((data) => {
+    var promises = [];
+    data.members.forEach((userId, i) => {
+      promises[i] = getUserInfo(userId).then((username) => {
+        return {username : username, userid: userId};
+      });
+    });
+    return Promise.all(promises).then((username) => {
+      members = username;
+      console.log(members);
+      throw(new Exception("STOP"));
+      return username;
+    });
+  });
+}
+
+function postToEverybody(channel, message) {
+  getMembers(channel).then((users) => {
+    console.log(users)
+    users.forEach((user) => {
+      console.log('Sending', user.username, message)
+      bot.postMessageToUser(user.username, message);
+    });
+  });
+}
+
+function askToEverybody(channel) {
+  getMembers(channel).then((users) => {
+
+    // On username
+    console.log(users)
+    users.forEach((user) => {
+      bigbrother.askTo(user.username).then(function (question) {
+        console.log('Sending', user.username, question)
+        bot.postMessageToUser(user.username, question);
+      })
+
+      // Error on username, try with real name
+      .catch(function(error){
+        console.log("JIRA ISSUES NOT FOUND "+ error);
+        
+        // Get user real name
+        getUserRealName(user.userid).then(realname => {
+          console.log("Real name: "+ realname);
+          bigbrother.getUsername(realname).then(username => askTo(username))
+            .then(function (question) {
+              console.log('Sending', realname, question)
+              bot.postMessageToUser(username, question);
+          });
+        }).catch(function(error){
+          console.log("Error on get user name "+ error);
+        });
+      });
+    });
+  });
+}
 
 bot.on('message', (data) => {
   console.log('message', data)
@@ -70,6 +120,33 @@ bot.on('close', (data) => {
 bot.on('error', (data) => {
   console.log('error', data)
 })
+
+function getUserInfo(userId) {
+  var url = 'https://slack.com/api/users.info?token=' + BOT_TOKEN + '&user=' + userId;
+  return request.post(url).then((response) => {
+    console.log(response);
+    return JSON.parse(response).user.name;
+  });
+}
+
+function getUserRealName(userId) {
+  var url = 'https://slack.com/api/users.info?token=' + BOT_TOKEN + '&user=' + userId;
+  return request.post(url).then((response) => {
+    console.log(response);
+    return JSON.parse(response).user.real_name;
+  });
+}
+
+function startWorking() {
+    askToEverybody(CHANNEL);
+    setTimeout(function() {
+      postToEverybody(CHANNEL, 'Como ha ido?');
+      startBreak();
+    }, 2 * 60 * 1000);
+}
+
+
+startWorking();
 
 bot.on('start', (data) => {
   console.log('start', data)

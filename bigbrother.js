@@ -24,9 +24,14 @@ if (jiraconfig.jiraUserName) {
         opts = {jql:'assignee='+user+' and status = "In Progress"'};
         console.log(opts.jql);
         jira.search.search(opts, function(error, issues) {
+            console.log(issues);
+            var issuesList = issues.issues;
+            if (issuesList.length == 0) {
+                console.log("Rejecting with..." + issues.warningMessages);
+                reject(issues.warningMessages)
+            }
             if (error) {
-                fulfill("Hi " + user + ", tell me what you are currently working on...\n");
-                return;
+                reject(error);
             }
             console.log(issues);
             var issuesList = issues.issues;
@@ -45,6 +50,24 @@ if (jiraconfig.jiraUserName) {
       });
     }
 
+    exports.getUsername = function (realname) {
+        console.log("[getUsername] "+realname);
+        return new Promise(function (fulfill, reject){
+            
+            var opts = {username: realname};
+            console.log("[getUsername] opts="+opts);
+
+            jira.user.search(opts, function(error, user) {
+                console.log("[getUsername] "+error+", " +user);
+                if (user.length > 0) {
+                    fulfill(user[0].key);
+                } else {
+                    reject("not found");
+                }
+            });
+        });
+    }
+
 } else {
 
     exports.askTo = function (user) {
@@ -53,6 +76,13 @@ if (jiraconfig.jiraUserName) {
         
             fulfill("Hi " + user + ", tell me what you are currently working on...\n");
             return;
+        });
+    }
+
+    exports.getUsername = function (realname) {
+
+        return new Promise(function (fulfill, reject){
+            return "unknown";
         });
     }
 }
