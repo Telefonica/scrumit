@@ -1,0 +1,19 @@
+{
+  "name": "scrumit",
+  "version": "1.0.0",
+  "description": "Hackathon: Breaking walls",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Telefonica/scrumit.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Telefonica/scrumit/issues"
+  },
+  "homepage": "https://github.com/Telefonica/scrumit#readme"
+}
