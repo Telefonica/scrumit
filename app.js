@@ -19,18 +19,20 @@ bot.on('message', function(data) {
 });
 
 function startBreak() {
-  bot.postMessageToUser('ggb', 'Chiste o juego o ...');
+  bot.postMessageToUser('ggarber', 'Chiste o juego o ...');
   setTimeout(function() {
     startWorking();
   }, 1 * 60 * 1000);
 }
 
 function startWorking() {
-  var channel = bot.getChannel('scrumbot-test');
+  bot.getChannel('general').then((data) => {
+    console.log(data);
+  });
   console.log(channel);
-  bot.postMessageToUser('ggb', 'Ola k ase?');
+  bot.postMessageToUser('ggarber', 'Ola k ase?');
   setTimeout(function() {
-    bot.postMessageToUser('ggb', 'meow!');
+    bot.postMessageToUser('ggarber', 'meow!');
     startBreak();
   }, 2 * 60 * 1000);
 }
