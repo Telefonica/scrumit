@@ -37,8 +37,6 @@ function startWorking() {
   }, 2 * 60 * 1000);
 }
 
-startWorking();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
