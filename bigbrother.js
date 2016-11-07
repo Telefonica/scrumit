@@ -17,12 +17,14 @@ var jira = new JiraClient( {
 
 exports.askTo = function (user, callback) {
 
-    question = "Hi " + user + ", currently you are working on...\n";
+    return new Promise(function (fulfill, reject){
+    
+    question = "Hi " + user + ", currently JIRA says you are working on these issues...\n";
     opts = {jql:'assignee='+user+' and status = "In Progress"'};
     console.log(opts.jql);
     jira.search.search(opts, function(error, issues) {
         if (error) {
-            callback(error, null);
+            fulfill("Hi " + user + ", tell me what you are currently working on...\n");
             return;
         }
         console.log(issues);
@@ -32,12 +34,15 @@ exports.askTo = function (user, callback) {
             console.log(issueQuestion);
             question += "\n "+issueQuestion;
         }
-        question += "\n Tell me on what you are really working... ^_"
-        callback(error, question);
+        if (issuesList.length > 2) {
+            question += "\n More than 2 issues? please, don't make me cry...."
+        }
+
+        question += "\n Tell me what you are currently working on... ^_^ "
+        fulfill(question);
     });
+  });
 }
-
-
 
 
 

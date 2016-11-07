@@ -77,7 +77,7 @@ function getUserInfo(userId) {
 }
 
 function startWorking() {
-  bigbrother.askTo('jorgev', function (error, question) {
+  bigbrother.askTo('jorgev').then(function (question) {
     postToEverybody(CHANNEL, question);
     setTimeout(function() {
       postToEverybody(CHANNEL, 'Como ha ido?');
