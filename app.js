@@ -21,10 +21,22 @@ var bot = new SlackBot({
     name: 'Scrumit'
 });
 
-setTimeout(function() {
-  console.log('Time')
-  bot.postMessageToUser('ggb', 'meow!', { 'slackbot': true, icon_emoji: ':cat:' });
-}, 60 * 1000);
+function startBreak() {
+  bot.postMessageToUser('ggb', 'Chiste o juego o ...', { 'slackbot': true, icon_emoji: ':cat:' });
+  setTimeout(function() {
+    startWorking();
+  }, 1 * 60 * 1000);
+}
+
+function startWorking() {
+  bot.postMessageToUser('ggb', 'Ola k ase?', { 'slackbot': true, icon_emoji: ':cat:' });
+  setTimeout(function() {
+    bot.postMessageToUser('ggb', 'meow!', { 'slackbot': true, icon_emoji: ':cat:' });
+    startBreak();
+  }, 2 * 60 * 1000);
+}
+
+startWorking();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
