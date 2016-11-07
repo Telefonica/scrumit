@@ -5,7 +5,9 @@ const favicon = require('serve-favicon')
 const logger = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const request = require('request-promise')
 const bot = require('./bot')
+const bigbrother = require('./bigbrother')
 const winston = require('winston')
 winston.remove(winston.transports.Console)
 winston.add(winston.transports.Console, { colorize: true, timestamp: true, level: 'debug' })
@@ -19,11 +21,12 @@ const app = express()
 
 var CHANNEL = 'general';
 var CHANNEL_ID = 'C2ZRNGN6T';
+const BOT_TOKEN = process.env.BOT_TOKEN
 
 bot.on('message', (data) => {
   // mapear messages a controllers
   if (data.type === 'message') {
-    console.log(data.channel, data.text)
+    console.log(data)
   }
 })
 
@@ -47,7 +50,7 @@ var members;
 
 function getMembers(channel) {
   console.log('Retrieving channel members');
-  return bot.getChannel(channel).then((data) => {
+  return getChannelInfo(CHANNEL_ID).then((data) => {
     var promises = [];
     data.members.forEach((userId, i) => {
       promises[i] = getUserInfo(userId).then((username) => {
@@ -56,8 +59,6 @@ function getMembers(channel) {
     });
     return Promise.all(promises).then((username) => {
       members = username;
-      console.log(members);
-      throw(new Exception("STOP"));
       return username;
     });
   });
@@ -87,7 +88,7 @@ function askToEverybody(channel) {
       // Error on username, try with real name
       .catch(function(error){
         console.log("JIRA ISSUES NOT FOUND "+ error);
-        
+
         // Get user real name
         getUserRealName(user.userid).then(realname => {
           console.log("Real name: "+ realname);
@@ -127,8 +128,14 @@ bot.on('error', (data) => {
 function getUserInfo(userId) {
   var url = 'https://slack.com/api/users.info?token=' + BOT_TOKEN + '&user=' + userId;
   return request.post(url).then((response) => {
-    console.log(response);
     return JSON.parse(response).user.name;
+  });
+}
+
+function getChannelInfo(channelId) {
+  var url = 'https://slack.com/api/channels.info?token=' + BOT_TOKEN + '&channel=' + channelId;
+  return request.post(url).then((response) => {
+    return JSON.parse(response).channel;
   });
 }
 
