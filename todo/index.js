@@ -9,7 +9,7 @@ const formatTasksData = function (tasks) {
     if (t.finished) {
       text += '~'
     }
-    text += `• ${moment(t.c_at).fromNow()}: ${t.id} - ${t.title}\n`
+    text += `• ${moment(t.c_at).fromNow()}: ${t._id} - ${t.title}\n`
     if (t.finished) {
       text += '~'
     }

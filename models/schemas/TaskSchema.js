@@ -1,12 +1,16 @@
 'use strict'
 
 const winston = require('winston')
+const uuid = require('node-uuid')
 
 let model
 
 module.exports = (mongoose, name) => {
   const schema = mongoose.Schema({
-    id: String,
+    _id: {
+      type: String,
+      default: uuid.v4
+    },
     title: String,
     description: String,
     due: Date,

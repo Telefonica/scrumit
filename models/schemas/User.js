@@ -1,7 +1,6 @@
 'use strict'
 
 const winston = require('winston')
-const uuid = require('node-uuid')
 
 const helpers = require('../../helpers/')
 
@@ -29,11 +28,9 @@ module.exports = (mongoose, name) => {
       const Task = mongoose.model('TaskSchema')
 
       const task = new Task({
-        id: uuid.v4(),
         title: data.text,
         description: '',
-        due: data.due,
-        c_at: new Date()
+        due: data.due
       })
 
       if (!u) {
@@ -97,7 +94,8 @@ module.exports = (mongoose, name) => {
       }
 
       const taskId = data.text.trim()
-      u.tasks.pull({ _id: taskId })
+      u.tasks = u.tasks.filter((t) => t._id.toString() !== taskId)
+      u.markModified('u.tasks')
       u.save(cb)
     })
   }

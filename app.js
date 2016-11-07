@@ -119,7 +119,7 @@ function getUserRealName(userId) {
 function startWorking() {
     askToEverybody(CHANNEL);
     setTimeout(function() {
-      postToEverybody(CHANNEL, 'What's up dude?');
+      postToEverybody(CHANNEL, 'What\'s up dude?');
       startBreak();
     }, 2 * 60 * 1000);
 }
