@@ -71,8 +71,6 @@ function askToEverybody(channel) {
     });
   });
 }
-  
-
 
 function startBreak() {
   postToEverybody(CHANNEL, 'Juego, chiste, pregunta....');
