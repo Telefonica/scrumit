@@ -4,22 +4,13 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var bot = require('./bot');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
 
-var SlackBot = require('slackbots');
-
-var BOT_TOKEN = process.env.BOT_TOKEN;
-
-console.log('Starting bot with token ' + BOT_TOKEN);
-
-var bot = new SlackBot({
-    token: BOT_TOKEN,
-    name: 'Scrumit'
-});
 
 function startBreak() {
   bot.postMessageToUser('ggb', 'Chiste o juego o ...');
