@@ -11,11 +11,13 @@ function getUserInfo (userId) {
 
 class TodoList {
   constructor (bot, config) {
+    winston.info('[TODO] Configuring')
     this.bot = bot
   }
 
   sendMessage (user, text) {
     getUserInfo(user).then((username) => {
+      winston.info(`[TODO] sending message to ${username} with '${text}'`)
       this.bot.postMessageToUser(username, text)
     })
   }
@@ -41,10 +43,15 @@ class TodoList {
   }
 
   show (data) {
+    const otherUser = data.text.replace('todo show', '').trim()
+    if (otherUser !== '') {
+      data.otherUser = otherUser
+    }
+
     User.getTasks(data, (err, tasks) => {
       if (err) {
         winston.error(err)
-        this.sendMessage(data.user, 'There was an error adding a new task. Try again later')
+        this.sendMessage(data.user, 'There was an error showing the list of tasks. Try again later')
       } else {
         this.sendMessage(data.user, tasks)
       }

@@ -50,9 +50,24 @@ module.exports = (mongoose, name) => {
   }
 
   schema.statics.getTasks = function (data, cb) {
-    model.findOne({ id: getUserId(data) }, (err, u) => {
-      if (err || !u) {
-        return cb('Error or not found')
+    let userId = data.user
+    if (data.otherUser) {
+      // getUserId for this username
+      userId = 1 // getUserIdFromUsername
+    }
+
+    const opts = {
+      team: data.team,
+      user: userId
+    }
+
+    model.findOne({ id: getUserId(opts) }, (err, u) => {
+      if (err) {
+        return cb(err)
+      }
+
+      if (!u) {
+        return cb('User not found')
       }
 
       cb(null, u.tasks)
@@ -61,8 +76,12 @@ module.exports = (mongoose, name) => {
 
   schema.statics.removeTask = function (data, cb) {
     model.findOne({ id: getUserId(data) }, (err, u) => {
-      if (err || !u) {
-        return cb('Error or not found')
+      if (err) {
+        return cb(err)
+      }
+
+      if (!u) {
+        return cb('User not found')
       }
 
       const taskId = data.text.trim()
