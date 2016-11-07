@@ -10,6 +10,17 @@ var users = require('./routes/users');
 
 var app = express();
 
+var SlackBot = require('slackbots');
+
+var bot = new SlackBot({
+    token: 'xoxb-101849598134-rdhSwg26GYDiREesL6VTyxar', // Add a bot https://my.slack.com/services/new/bot and put the token
+    name: 'Scrumit'
+});
+
+setTimeout(function() {
+  bot.postMessageToUser('guillermo', 'meow!', { 'slackbot': true, icon_emoji: ':cat:' });
+}, 60 * 1000);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
