@@ -11,6 +11,10 @@ var users = require('./routes/users');
 
 var app = express();
 
+bot.on('message', function(data) {
+    // all ingoing events https://api.slack.com/rtm
+    console.log(data);
+});
 
 function startBreak() {
   bot.postMessageToUser('ggb', 'Chiste o juego o ...');
