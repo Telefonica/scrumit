@@ -12,10 +12,10 @@ var users = require('./routes/users');
 var app = express();
 
 bot.on('message', function(data) {
-    // mapear messages a controllers
-    if (data.type === 'message') {
-      console.log(data.channel, data.text)
-    }
+  // mapear messages a controllers
+  if (data.type === 'message') {
+    console.log(data.channel, data.text)
+  }
 });
 
 function startBreak() {
@@ -29,13 +29,15 @@ function startWorking() {
   bot.getChannel('general').then((data) => {
     console.log(data);
   });
-  console.log(channel);
+
   bot.postMessageToUser('ggarber', 'Ola k ase?');
   setTimeout(function() {
     bot.postMessageToUser('ggarber', 'meow!');
     startBreak();
   }, 2 * 60 * 1000);
 }
+
+startWorking();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
