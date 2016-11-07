@@ -6,7 +6,7 @@ const uuid = require('node-uuid')
 const helpers = require('../../helpers/')
 
 const getUserId = function (data) {
-  return `${data.team}-${data.otherUser || data.user}`
+  return `${data.team}-${data.user}`
 }
 
 let model
@@ -54,7 +54,7 @@ module.exports = (mongoose, name) => {
   const getTasks = function (data, cb) {
     const opts = {
       team: data.team,
-      otherUser: data.otherUser
+      user: data.otherUser || data.user
     }
 
     model.findOne({ id: getUserId(opts) }, (err, u) => {
@@ -72,6 +72,7 @@ module.exports = (mongoose, name) => {
 
   schema.statics.getTasks = function (data, cb) {
     if (data.otherUser) {
+      winston.info(`[TODO] ${data.user} requested ${data.otherUser} task list!`)
       helpers.getMembers().then((members) => {
         const list = members.find((el) => {
           return el.username === data.otherUser
@@ -80,6 +81,7 @@ module.exports = (mongoose, name) => {
         getTasks(data, cb)
       })
     } else {
+      winston.info(`[TODO] ${data.user} requested its own task list!`)
       getTasks(data, cb)
     }
   }
