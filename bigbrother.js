@@ -19,7 +19,7 @@ if (jiraconfig.jiraUserName) {
     exports.askTo = function (user) {
 
         return new Promise(function (fulfill, reject){
-        
+
         var question = "Hi " + user + ", currently JIRA says you are working on these issues...\n";
         opts = {jql:'assignee='+user+' and status = "In Progress"'};
         console.log(opts.jql);
@@ -53,13 +53,13 @@ if (jiraconfig.jiraUserName) {
     exports.getUsername = function (realname) {
         console.log("[getUsername] "+realname);
         return new Promise(function (fulfill, reject){
-            
+
             var opts = {username: realname};
             console.log("[getUsername] opts="+opts);
 
             jira.user.search(opts, function(error, user) {
                 console.log("[getUsername] "+error+", " +user);
-                if (user.length > 0) {
+                if (!error && user.length > 0) {
                     fulfill(user[0].key);
                 } else {
                     reject("not found");
@@ -73,7 +73,7 @@ if (jiraconfig.jiraUserName) {
     exports.askTo = function (user) {
 
         return new Promise(function (fulfill, reject){
-        
+
             fulfill("Hi " + user + ", tell me what you are currently working on...\n");
             return;
         });
