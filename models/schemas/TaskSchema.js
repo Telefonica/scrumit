@@ -10,7 +10,14 @@ module.exports = (mongoose, name) => {
     title: String,
     description: String,
     due: Date,
-    c_at: Date
+    finished: {
+      type: Boolean,
+      default: false
+    },
+    c_at: {
+      type: Date,
+      default: Date.now
+    }
   })
 
   model = mongoose.model(name, schema)

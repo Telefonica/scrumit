@@ -15,6 +15,8 @@ winston.add(winston.transports.Console, { colorize: true, timestamp: true, level
 const index = require('./routes/index')
 const users = require('./routes/users')
 
+const helpers = require('./helpers/')
+
 const app = express()
 
 var CHANNEL = 'general';
@@ -44,30 +46,8 @@ const configureTodo = function configureTodo () {
 }
 configureTodo()
 
-var members;
-
-function getMembers(channel) {
-
-  if (members) {
-    return Promise.resolve(members);
-  }
-  console.log('Retrieving channel members');
-  return getChannelInfo(CHANNEL_ID).then((data) => {
-    var promises = [];
-    data.members.forEach((userId, i) => {
-      promises[i] = getUserInfo(userId).then((username) => {
-        return {username : username, userid: userId};
-      });
-    });
-    return Promise.all(promises).then((username) => {
-      members = username;
-      return username;
-    });
-  });
-}
-
 function postToEverybody(channel, message) {
-  getMembers(channel).then((users) => {
+  helpers.getMembers(channel).then((users) => {
     console.log(users)
     users.forEach((user) => {
       console.log('Sending', user.username, message)
@@ -77,7 +57,7 @@ function postToEverybody(channel, message) {
 }
 
 function askToEverybody(channel) {
-  getMembers(channel).then((users) => {
+  helpers.getMembers(channel).then((users) => {
 
     // On username
     console.log(users)
@@ -127,19 +107,6 @@ bot.on('error', (data) => {
   console.log('error', data)
 })
 
-function getUserInfo(userId) {
-  var url = 'https://slack.com/api/users.info?token=' + BOT_TOKEN + '&user=' + userId;
-  return request.post(url).then((response) => {
-    return JSON.parse(response).user.name;
-  });
-}
-
-function getChannelInfo(channelId) {
-  var url = 'https://slack.com/api/channels.info?token=' + BOT_TOKEN + '&channel=' + channelId;
-  return request.post(url).then((response) => {
-    return JSON.parse(response).channel;
-  });
-}
 
 function getUserRealName(userId) {
   var url = 'https://slack.com/api/users.info?token=' + BOT_TOKEN + '&user=' + userId;

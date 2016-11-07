@@ -1,13 +1,6 @@
 const winston = require('winston')
 const { User } = require('../models/').models
-const request = require('request-promise')
-
-function getUserInfo (userId) {
-  const url = 'https://slack.com/api/users.info?token=' + process.env.BOT_TOKEN + '&user=' + userId
-  return request.post(url).then((response) => {
-    return JSON.parse(response).user.name
-  })
-}
+const helpers = require('../helpers/')
 
 class TodoList {
   constructor (bot, config) {
@@ -16,7 +9,7 @@ class TodoList {
   }
 
   sendMessage (user, text) {
-    getUserInfo(user).then((username) => {
+    helpers.getUserInfo(user).then((username) => {
       winston.info(`[TODO] sending message to ${username} with '${text}'`)
       this.bot.postMessageToUser(username, text)
     })
