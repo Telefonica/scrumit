@@ -125,7 +125,7 @@ function startWorking() {
 }
 
 
-startWorking();
+//startWorking();
 
 bot.on('start', (data) => {
   console.log('start', data)

@@ -1,6 +1,21 @@
 const winston = require('winston')
 const { User } = require('../models/').models
 const helpers = require('../helpers/')
+const moment = require('moment')
+
+const formatTasksData = function (tasks) {
+  let text = `There are *${tasks.length} tasks*:\n`
+  tasks.forEach((t) => {
+    if (t.finished) {
+      text += '~'
+    }
+    text += `• ${moment(t.c_at).fromNow()}: ${t.id} - ${t.title}\n`
+    if (t.finished) {
+      text += '~'
+    }
+  })
+  return text
+}
 
 class TodoList {
   constructor (bot, config) {
@@ -46,7 +61,8 @@ class TodoList {
         winston.error(err)
         this.sendMessage(data.user, 'There was an error showing the list of tasks. Try again later')
       } else {
-        this.sendMessage(data.user, tasks)
+        const formatted = formatTasksData(tasks)
+        this.sendMessage(data.user, formatted)
       }
     })
   }
