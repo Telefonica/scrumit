@@ -15,8 +15,6 @@ winston.add(winston.transports.Console, { colorize: true, timestamp: true, level
 const index = require('./routes/index')
 const users = require('./routes/users')
 
-const TodoList = require('./todo/')
-
 const app = express()
 
 var CHANNEL = 'general';
@@ -49,6 +47,10 @@ configureTodo()
 var members;
 
 function getMembers(channel) {
+
+  if (members) {
+    return Promise.resolve(members);
+  }
   console.log('Retrieving channel members');
   return getChannelInfo(CHANNEL_ID).then((data) => {
     var promises = [];
@@ -87,7 +89,7 @@ function askToEverybody(channel) {
 
       // Error on username, try with real name
       .catch(function(error){
-        console.log("JIRA ISSUES NOT FOUND "+ error);
+        console.log("Jira issues not found -> "+ error);
 
         // Get user real name
         getUserRealName(user.userid).then(realname => {

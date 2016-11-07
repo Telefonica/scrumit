@@ -3,6 +3,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var jiraconfig = require('./jiraconfig')
 
 var exports = module.exports = {};
+require('request').debug = true
 
 if (jiraconfig.jiraUserName) {
 
@@ -24,15 +25,17 @@ if (jiraconfig.jiraUserName) {
         opts = {jql:'assignee='+user+' and status = "In Progress"'};
         console.log(opts.jql);
         jira.search.search(opts, function(error, issues) {
+            if (error) {
+                console.log(error);
+                reject(error);
+            }
             console.log(issues);
             var issuesList = issues.issues;
             if (issuesList.length == 0) {
                 console.log("Rejecting with..." + issues.warningMessages);
                 reject(issues.warningMessages)
             }
-            if (error) {
-                reject(error);
-            }
+            
             console.log(issues);
             var issuesList = issues.issues;
             for (var index in issuesList) {
@@ -52,17 +55,20 @@ if (jiraconfig.jiraUserName) {
 
     exports.getUsername = function (realname) {
         console.log("[getUsername] "+realname);
-        return new Promise(function (fulfill, reject){
+        return new Promise(function (fulfill, reject) {
 
             var opts = {username: realname};
-            console.log("[getUsername] opts="+opts);
+            console.log("[getUsername] opts="+opts + " " + realname);
 
             jira.user.search(opts, function(error, user) {
-                console.log("[getUsername] "+error+", " +user);
-                if (!error && user.length > 0) {
+                console.log("[getUsername] Response: "+error+", " +user);
+                if (error) {
+                    reject("not found");
+                }
+                if (user.length > 0) {
                     fulfill(user[0].key);
                 } else {
-                    reject("not found");
+                    reject("empty, why?");
                 }
             });
         });
