@@ -18,7 +18,8 @@ var bot = new SlackBot({
 });
 
 setTimeout(function() {
-  bot.postMessageToUser('guillermo', 'meow!', { 'slackbot': true, icon_emoji: ':cat:' });
+  console.log('Time')
+  bot.postMessageToUser('ggb', 'meow!', { 'slackbot': true, icon_emoji: ':cat:' });
 }, 60 * 1000);
 
 // view engine setup
