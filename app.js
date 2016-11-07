@@ -1,143 +1,111 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var request = require('request-promise');
-var bot = require('./bot');
+'use strict'
+const express = require('express')
+const path = require('path')
+const favicon = require('serve-favicon')
+const logger = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
+const bot = require('./bot')
+const winston = require('winston')
+winston.remove(winston.transports.Console)
+winston.add(winston.transports.Console, { colorize: true, timestamp: true, level: 'debug' })
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+const index = require('./routes/index')
+const users = require('./routes/users')
 
-var bigbrother = require('./bigbrother');
+const TodoList = require('./todo/')
 
-var app = express();
+const app = express()
 
-var CHANNEL = 'general';
-var CHANNEL_ID = 'C2ZRNGN6T';
-
-bot.on('message', function(data) {
+bot.on('message', (data) => {
   // mapear messages a controllers
   if (data.type === 'message') {
+    console.log(data.channel, data.text)
+  }
+})
+
+function startBreak () {
+  bot.postMessageToUser('guillermo', 'Chiste o juego o ...')
+  setTimeout(() => {
+    startWorking()
+  }, 1 * 60 * 1000)
+}
+
+function startWorking () {
+  bot.getChannel('general').then((data) => {
     console.log(data)
-    if (data.subtype != 'bot_message') {
-      getUserInfo(data.user).then((username) => {
-        bot.postMessageToChannel(CHANNEL, data.text, { as_user: false, username: username });
-      });
-    }
+  })
+
+  bot.postMessageToUser('guillermo', 'Ola k ase?')
+  setTimeout(() => {
+    bot.postMessageToUser('guillermo', 'meow!')
+    startBreak()
+  }, 2 * 60 * 1000)
+}
+
+startWorking()
+
+let todo
+const configureTodo = function configureTodo () {
+  todo = new TodoList(bot)
+}
+configureTodo()
+
+bot.on('message', (data) => {
+  console.log('message', data)
+  if (data.type !== 'message') return
+  if (data.text.startsWith('todo')) {
+    todo.handle(data)
   }
-});
+})
 
-var members;
+bot.on('open', (data) => {
+  console.log('open', data)
+})
 
-function getMembers(channel) {
-  if (members) {
-    return Promise.resolve(members);
-  }
+bot.on('close', (data) => {
+  console.log('close', data)
+})
 
-  console.log('Retrieving channel members');
+bot.on('error', (data) => {
+  console.log('error', data)
+})
 
-  return getChannelInfo(CHANNEL_ID).then((data) => {
-    var promises = [];
-    data.members.forEach((userId, i) => {
-      promises[i] = getUserInfo(userId).then((username) => {
-        return username;
-      });
-    });
-    return Promise.all(promises).then((usernames) => {
-      members = usernames;
-      return usernames;
-    });
-  });
-}
-
-function postToEverybody(channel, message) {
-  getMembers(channel).then((usernames) => {
-    console.log(usernames)
-    usernames.forEach((username) => {
-      console.log('Sending', username, message)
-      bot.postMessageToUser(username, message);
-    });
-  });
-}
-
-function askToEverybody(channel) {
-  getMembers(channel).then((usernames) => {
-    console.log(usernames)
-    usernames.forEach((username) => {
-      bigbrother.askTo(username).then(function (question) {
-        console.log('Sending', username, question)
-        bot.postMessageToUser(username, question);
-      });
-    });
-  });
-}
-
-function startBreak() {
-  postToEverybody(CHANNEL, '[Break Starting] Juego, chiste, pregunta....');
-  setTimeout(function() {
-    startWorking();
-  }, 1 * 60 * 1000);
-}
-
-var BOT_TOKEN = process.env.BOT_TOKEN;
-
-function getUserInfo(userId) {
-  var url = 'https://slack.com/api/users.info?token=' + BOT_TOKEN + '&user=' + userId;
-  return request.post(url).then((response) => {
-    return JSON.parse(response).user.name;
-  });
-}
-
-function getChannelInfo(channelId) {
-  var url = 'https://slack.com/api/channels.info?token=' + BOT_TOKEN + '&channel=' + channelId;
-  return request.post(url).then((response) => {
-    return JSON.parse(response).channel;
-  });
-}
-
-function startWorking() {
-    askToEverybody(CHANNEL);
-    setTimeout(function() {
-      postToEverybody(CHANNEL, '[Mini-Sprint Ended] How did it go? Did you finish those tasks?');
-      startBreak();
-    }, 2 * 60 * 1000);
-}
-
-startWorking();
+bot.on('start', (data) => {
+  console.log('start', data)
+})
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'jade')
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', index);
-app.use('/users', users);
+app.use('/', index)
+app.use('/users', users)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+app.use((req, res, next) => {
+  const err = new Error('Not Found')
+  err.status = 404
+  next(err)
+})
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = err.message
+  res.locals.error = req.app.get('env') === 'development' ? err : {}
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+  res.status(err.status || 500)
+  res.render('error')
+})
 
-module.exports = app;
+module.exports = app

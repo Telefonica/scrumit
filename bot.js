@@ -1,12 +1,12 @@
-var SlackBot = require('slackbots');
+const SlackBot = require('slackbots')
 
-var BOT_TOKEN = process.env.BOT_TOKEN;
+const BOT_TOKEN = process.env.BOT_TOKEN
 
-console.log('Starting bot with token ' + BOT_TOKEN);
+console.log('Starting bot with token ' + BOT_TOKEN)
 
-var bot = new SlackBot({
-    token: BOT_TOKEN,
-    name: 'Scrumit'
-});
+const bot = new SlackBot({
+  token: BOT_TOKEN,
+  name: 'Scrumit'
+})
 
-module.exports = bot;
+module.exports = bot
