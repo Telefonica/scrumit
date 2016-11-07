@@ -12,6 +12,10 @@ var users = require('./routes/users');
 var app = express();
 
 bot.on('message', function(data) {
+    // mapear messages a controllers
+    if (data.type === 'message') {
+      console.log(data.channel, data.text)
+    }
     // all ingoing events https://api.slack.com/rtm
     console.log(data);
 });
@@ -24,6 +28,8 @@ function startBreak() {
 }
 
 function startWorking() {
+  let channel = bot.getChannel('scrumbot-test');
+  console.log(channel);
   bot.postMessageToUser('ggb', 'Ola k ase?');
   setTimeout(function() {
     bot.postMessageToUser('ggb', 'meow!');
