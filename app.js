@@ -9,7 +9,11 @@ var bot = require('./bot');
 var index = require('./routes/index');
 var users = require('./routes/users');
 
+var bigbrother = require('./bigbrother');
+
 var app = express();
+
+
 
 bot.on('message', function(data) {
   // mapear messages a controllers
@@ -19,7 +23,7 @@ bot.on('message', function(data) {
 });
 
 function startBreak() {
-  bot.postMessageToUser('ggarber', 'Chiste o juego o ...');
+  bot.postMessageToUser('jorgev', 'Chiste o juego o ...');
   setTimeout(function() {
     startWorking();
   }, 1 * 60 * 1000);
@@ -30,11 +34,14 @@ function startWorking() {
     console.log(data);
   });
 
-  bot.postMessageToUser('ggarber', 'Ola k ase?');
-  setTimeout(function() {
-    bot.postMessageToUser('ggarber', 'meow!');
-    startBreak();
-  }, 2 * 60 * 1000);
+  bigbrother.askTo('jorgev', function (error, question) {
+    bot.postMessageToUser('jorgev', question);
+    setTimeout(function() {
+      bot.postMessageToUser('jorgev', 'meow!');
+      startBreak();
+    }, 2 * 60 * 1000);
+  });
+  
 }
 
 startWorking();
