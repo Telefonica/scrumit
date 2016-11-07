@@ -60,6 +60,20 @@ function postToEverybody(channel, message) {
   });
 }
 
+function askToEverybody(channel) {
+  getMembers(channel).then((usernames) => {
+    console.log(usernames)
+    usernames.forEach((username) => {
+      bigbrother.askTo(username).then(function (question) {
+        console.log('Sending', username, question)
+        bot.postMessageToUser(username, question);
+      });
+    });
+  });
+}
+  
+
+
 function startBreak() {
   postToEverybody(CHANNEL, 'Juego, chiste, pregunta....');
   setTimeout(function() {
@@ -77,13 +91,11 @@ function getUserInfo(userId) {
 }
 
 function startWorking() {
-  bigbrother.askTo('jorgev').then(function (question) {
-    postToEverybody(CHANNEL, question);
+    askToEverybody(CHANNEL);
     setTimeout(function() {
       postToEverybody(CHANNEL, 'Como ha ido?');
       startBreak();
     }, 2 * 60 * 1000);
-  });
 }
 
 startWorking();
