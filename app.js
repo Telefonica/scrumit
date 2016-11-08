@@ -39,7 +39,7 @@ function startBreak () {
 
 let todo
 const configureTodo = function configureTodo () {
-  if (process.env.MONGO_URI) {
+  if (process.env.MONGODB_URI) {
     const TodoList = require('./todo/')
     todo = new TodoList(bot)
   }
@@ -90,7 +90,7 @@ function askToEverybody(channel) {
 bot.on('message', (data) => {
   console.log('message', data)
   if (data.type !== 'message') return
-  if (data.text.startsWith('todo')) {
+  if (data.text.startsWith('todo') && todo) {
     todo.handle(data)
   }
 })
