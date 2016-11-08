@@ -24,7 +24,7 @@ const models = require('require-all')({
 
 const db = {}
 
-const mongoURI = process.env.MONGO_URI
+const mongoURI = process.env.MONGODB_URI
 
 mongoose.connect(mongoURI)
 const conn = mongoose.connection
