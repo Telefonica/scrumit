@@ -15,7 +15,7 @@ function getUserInfo (userId) {
   })
 }
 
-const CHANNEL_ID = 'C2ZRNGN6T'
+const CHANNEL_ID = 'C2Z8A4KGD'  // #ggbtest
 let members
 function getMembers (channel) {
   console.log(`Retrieving ${channel || CHANNEL_ID} members`)

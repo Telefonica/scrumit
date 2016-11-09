@@ -19,8 +19,7 @@ const helpers = require('./helpers/')
 
 const app = express()
 
-var CHANNEL = 'general';
-var CHANNEL_ID = 'C2ZRNGN6T';
+var CHANNEL = 'ggbtest';
 const BOT_TOKEN = process.env.BOT_TOKEN
 
 bot.on('message', (data) => {
@@ -59,8 +58,6 @@ function postToEverybody(channel, message) {
 function askToEverybody(channel) {
   helpers.getMembers(channel).then((users) => {
 
-    // On username
-    console.log(users)
     users.forEach((user) => {
       bigbrother.askTo(user.username).then(function (question) {
         console.log('Sending', user.username, question)
@@ -125,7 +122,7 @@ function startWorking() {
 }
 
 
-//startWorking();
+startWorking();
 
 bot.on('start', (data) => {
   console.log('start', data)
