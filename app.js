@@ -25,7 +25,7 @@ const BOT_TOKEN = process.env.BOT_TOKEN
 bot.on('message', (data) => {
   // mapear messages a controllers
   if (data.type === 'message') {
-    console.log(data)
+    bot.postToChannel(CHANNEL, data.text);
   }
 })
 
@@ -33,7 +33,7 @@ function startBreak () {
   bot.postMessageToUser('guillermo', 'Chiste o juego o ...')
   setTimeout(() => {
     startWorking()
-  }, 1 * 60 * 1000)
+  }, 5 * 60 * 1000)
 }
 
 let todo
@@ -118,7 +118,7 @@ function startWorking() {
     setTimeout(function() {
       postToEverybody(CHANNEL, 'What\'s up dude?');
       startBreak();
-    }, 2 * 60 * 1000);
+    }, 25 * 60 * 1000);
 }
 
 
